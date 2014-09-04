@@ -1,0 +1,76 @@
+
+
+
+{% if customer %} {% assign digest = customer.id | append:customer.email | append:'82cceb43-2e75-4912-aefe-1718dc6071bb' | md5 %} {% endif %}
+
+<script type="text/javascript">
+window.sloyalty = window.sloyalty || {};
+window.sloyalty.shop = 'www.heygorgeous.com';
+
+window.sloyalty.customer_id = '{% if customer %}{{ customer.id }}{% endif %}';
+window.sloyalty.digest = '{% if customer %}{{ digest }}{% endif %}';
+
+</script>
+
+
+
+
+  
+
+
+{% if customer %}
+{% assign digest = customer.id | append:customer.email | append:'82cceb43-2e75-4912-aefe-1718dc6071bb' | md5 %}
+
+<div class="sloyalty-loyalty-widget"
+     data-digest="{{ digest }}"
+     data-shop="www.heygorgeous.com"
+     data-version="3"
+     data-widget-css="bottom:0px;right:20px;"
+     data-overlay-css=""
+     data-customer="{{ customer.id }}"></div>
+{% else %}
+<div class="sloyalty-loyalty-widget"
+     data-shop="www.heygorgeous.com"
+     data-version="3"
+     data-widget-css="bottom:0px;right:20px;"
+     data-overlay-css=""></div>
+{% endif %}
+
+
+
+
+
+<div class="sloyalty-referral-widget"
+     data-shop="www.heygorgeous.com"
+     data-customer="{% if customer %}{{ customer.id }}{% endif %}"></div>
+
+
+
+
+
+
+{% if customer %}
+{% assign digest = customer.id | append:customer.email | append:'82cceb43-2e75-4912-aefe-1718dc6071bb' | md5 %}
+
+<div class="sloyalty-standalone-share-widget"
+     data-shop="www.heygorgeous.com"
+     data-customer="{{ customer.id }}"
+     data-digest="{{ digest }}"></div>
+{% else %}
+<div class="sloyalty-standalone-share-widget"
+     data-shop="www.heygorgeous.com"
+     data-customer=""></div>
+{% endif %}
+
+
+
+
+
+
+<div class="sloyalty-fans-widget"
+     data-shop="www.heygorgeous.com"
+     data-customer="{% if customer %}{{ customer.id }}{% endif %}"></div>
+
+
+
+<script src="//d6j2fa188icsm.cloudfront.net/site_media/static/dist/js/shopify-storefront.js"></script>

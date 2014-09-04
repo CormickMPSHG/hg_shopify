@@ -1,0 +1,240 @@
+<!--
+*******************************************************************************
+Shopify Wishlist App Automation v2.1 - Feb 3rd, 2014
+*******************************************************************************
+-->
+
+<script type="text/javascript" charset="utf-8">
+
+// ****************************************************************************
+// Detect our depends; add them as needed
+// ****************************************************************************
+
+if (typeof sessvars === "undefined") {
+	document.write({{ "sessvars.js" | asset_url | script_tag | json }});
+}
+
+if (!(window.jQuery && jQuery.fn)) {
+	document.write({{ "http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" | script_tag | json }});
+}
+
+// ****************************************************************************
+// Submit a form to the wishlist server
+// ****************************************************************************
+
+function wishlist_post_to_url(path, params, method) {
+	method = method || "post";
+	var form = document.createElement("form");
+	form._submit_function_ = form.submit;
+	form.setAttribute("method", method);
+	form.setAttribute("action", path);
+	for (var key in params) {
+		var hiddenField = document.createElement("input");
+		hiddenField.setAttribute("type", "hidden");
+		hiddenField.setAttribute("name", key);
+		hiddenField.setAttribute("value", params[key]);
+		form.appendChild(hiddenField);
+	}
+	document.body.appendChild(form);
+	form._submit_function_();
+}
+
+</script>
+
+<!--
+*******************************************************************************
+Account Page
+*******************************************************************************
+-->
+
+{% if template contains 'account' %}
+
+<script type="text/javascript">
+
+//sessvars.$.debug();
+if (sessvars.wishlistNotLoggedIn) {
+	sessvars.wishlistNotLoggedIn = false;
+	wishListBaseUrl = 'http://' + Shopify.shop + '/apps/wishlist/add/';
+	var params = { CustomerId: '{{ customer.id }}', Url: sessvars.wishlistProductUrl, VariantId: sessvars.wishlistVariantId };
+	wishlist_post_to_url(wishListBaseUrl, params);
+}
+else if (sessvars.wishlistRedirect) {
+	sessvars.wishlistRedirect = false;
+	wishlist_post_to_url('{{ shop.url }}/apps/wishlist/', { CustomerId: '{{ customer.id }}' });
+}
+
+</script>
+
+{% endif %}
+
+<!--
+*******************************************************************************
+Product Page
+*******************************************************************************
+-->
+
+{% if template contains 'product' %}
+
+<!--
+*******************************************************************************
+Optional styling for the ADD TO WISHLIST button; uncomment the CSS below
+*******************************************************************************
+-->
+
+<style type="text/css">
+.wishlistbutton a {
+	line-height: 36px;
+/*
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	display: inline-block;
+	height: 36px;
+	border: none;
+	margin: 0;
+	padding: 0 20px;
+	color: #ffffff;
+	font-weight: 700;
+	font-size: 12px;
+	text-transform: none;
+	background: #f45b4f;
+	width: auto;
+	cursor: pointer;
+	margin-top: 20px;
+*/
+}
+.wishlistbutton a:hover {
+/*
+	background-color: #ee4d41;
+	color: #ffffff;
+*/
+}
+</style>
+
+<script type="text/javascript" charset="utf-8">
+
+var fragment = "";
+var productSelect = "#product-select";
+var productForm = null;
+var productAddToWishlist = false;
+var soldOutDivId = "product-header";
+
+// ****************************************************************************
+// Find the add to cart form
+// ****************************************************************************
+
+for (i = 0; i < document.forms.length; ++i) {
+	if (document.forms[i].action.indexOf("/cart/add") != -1) {
+		productForm = document.forms[i];
+		break;
+	}
+}
+
+// ****************************************************************************
+// If product has variants, find the selector id so we can find the variant
+// ****************************************************************************
+
+if (productForm != null) {
+	selects = productForm.getElementsByTagName('select');
+	for (i = 0; i < selects.length; ++i) {
+		if (selects[i].getAttribute("name") === 'id') {
+			productSelect = '#'+ selects[i].getAttribute("id");
+			break;
+		}
+	}
+}
+
+// ****************************************************************************
+// Create an add to wishlist link - handle both logged-in and logged-out
+// ****************************************************************************
+
+{% if customer %}
+fragment = wishlist_create_fragment('<div class="wishlistbutton"><a id="wishlistadd-{{ product.id }}" href="#">Add to wishlist</a></div>');
+{% else %}
+fragment = wishlist_create_fragment('<div class="wishlistbutton"><a id="wishlistaddnotloggedin-{{ product.id }}" href="#">Add to wishlist</a></div>');
+{% endif %}
+
+// ****************************************************************************
+// Find the add to cart button and inject the add to wishlist link
+// ****************************************************************************
+
+if (productForm != null) {
+	inputs = productForm.getElementsByTagName('input');
+	for (i = 0; i < inputs.length; ++i) {
+		if (inputs[i].getAttribute("type") === 'submit') {
+			var generateHere = inputs[i].parentNode;
+			generateHere.appendChild(fragment);
+			productAddToWishlist = true;
+			break;
+		}
+	}
+
+	if (!productAddToWishlist) {
+		productForm.appendChild(fragment);
+		productAddToWishlist = true;
+	}
+}
+
+// ****************************************************************************
+// If the form is missing from the product, inject it into a soldout div
+// ****************************************************************************
+
+if (!productAddToWishlist) {
+	var soldOut = document.getElementById(soldOutDivId);
+	if (soldOut != null) {
+		soldOut.appendChild(fragment);
+	}
+}
+
+// ****************************************************************************
+// Helper Functions
+// ****************************************************************************
+
+function wishlist_get_variant_id() {
+	var variantID = jQuery(productSelect).val();
+	if (!variantID || 0 == variantID.length) {
+		variantID = '{{ product.variants.first.id }}';
+	}
+	return variantID;
+}
+
+function wishlist_create_fragment(htmlStr) {
+	var frag = document.createDocumentFragment(),
+	temp = document.createElement('div');
+	temp.innerHTML = htmlStr;
+	while (temp.firstChild) {
+		frag.appendChild(temp.firstChild);
+	}
+	return frag;
+}
+
+jQuery('#wishlistaddnotloggedin-{{ product.id }}').unbind('click');
+jQuery('#wishlistaddnotloggedin-{{ product.id }}').click(function(e) {
+	sessvars.wishlistNotLoggedIn = true;
+	sessvars.wishlistProductUrl = '{{ product.url }}';
+	sessvars.wishlistVariantId = wishlist_get_variant_id();
+	window.open('/account/login','_self');
+	return false;
+});
+
+jQuery('#wishlistadd-{{ product.id }}').unbind('click');
+jQuery('#wishlistadd-{{ product.id }}').click(function(e) {
+    sessvars.wishlistNotLoggedIn = false;
+	var params = { CustomerId: '{{ customer.id }}', Url: '{{ product.url }}', VariantId: wishlist_get_variant_id() };
+	wishlist_post_to_url('http://' + Shopify.shop + '/apps/wishlist/add/', params);
+	e.stopPropagation();
+	return false;
+});
+
+</script>
+
+{% endif %}
+
+<!--
+*******************************************************************************
+EOF
+*******************************************************************************
+-->

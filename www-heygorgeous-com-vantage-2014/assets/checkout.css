@@ -1,0 +1,206 @@
+/* @group Reset */
+
+/* Undo background and gradient */
+body, #main, #container, #header, #footer {
+  background: #fff;
+}
+
+#main #overview > * {
+  border: none;
+}
+
+#main #thumbs div {
+  border: none;
+  }
+  
+/* Undo overview background and borders */
+#main #overview {
+  background: #fff;
+  border: none;
+}
+
+/* center the title */
+#header > h1{
+  text-align:center;
+}
+
+
+/* @end */
+
+/* @group Globals */
+
+body {
+	color: #231f20;
+	text-align: center;
+	background: #fff;
+	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	line-height: 140%;
+}
+
+h1, h2, h3, h4, h5, label{
+	font-weight: normal !important;
+}
+
+input {
+	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif !important;
+}
+
+#container {
+	background: #fff;
+	border: none;
+	width: 805px;	
+}
+
+#content {
+	padding: 0px;
+}
+
+#tagline {
+	display: none;
+}
+
+a.hover: {
+	color: #ce202d !important;
+}
+
+
+/* @end */
+
+/* @group Info Bar */
+
+#info-bar {
+	border-bottom: none;
+	background: none;
+}
+
+/* @end */
+
+/* @group Order Summary */
+
+/* logo */
+#logo { 
+  	display: block;
+	width: 100%; 
+	height: 95px;
+	background: url(logo.png) no-repeat left;
+    background-position-x: center;
+	padding-bottom: 0px;
+        margin-left: 10px;
+        margin-top: 10px;
+}
+
+#wallet{
+	padding-top: 40px;
+	background-color: #fafafa !important;
+}
+
+#thumbs td {
+	padding: 20px;
+}
+
+#thumbs h3 {
+	color: #231f20 !important;
+	clear: both;
+	font-size: 13px;
+}
+
+#thumbs span, #thumbs h3 span {
+	color: #231f20;
+	font-size: 13px;
+}
+
+#container.slim #overview table#thumbs td {
+	padding: 10px;
+}
+
+
+#cost, #order-num {
+	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	color: #231f20;
+	font-weight: bold;
+	line-height: 120%;
+}
+
+#steps {
+	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+	line-height: 120%;
+	font-size: 13px;
+}
+
+#overview .hint {
+	display: none;
+}
+
+/* @end */
+
+/* @group Address+Emails+Buttons */
+
+#main #overview, #email, #addresses, .group, #marketing-box, .address-notification {
+	background: #fff;
+	border: 1px solid #d2d2d2;
+}
+
+#buttons {
+	background:#fafafa;
+	border-bottom:1px solid #d2d2d2;
+	border-top: 1px solid #d2d2d2;
+	margin:0;
+	padding:10px;
+}
+
+.group h3, .pgroup h3 {
+	color: #231f20;
+	border-bottom: none;
+}
+
+.group input{
+	padding: 3px;
+	font-size: 13px;
+	border: 1px solid #d2d2d2;
+}
+
+#container.slim {
+	width:  440px;
+}
+
+#container.slim #header, #container.slim #main, #container.slim #footer {
+	background-image: none;
+}
+
+/* @end */
+
+
+/* @group Footer */
+
+#footer p {
+	display:  none;
+}
+
+/* @end */
+
+/* @group Errors */
+
+.field-with-errors{ 
+	margin-bottom: 20px; 
+	border: 1px solid #FBC2C4; 
+	background: #FBE3E4; 
+	padding: 10px 5px;
+}
+
+.field-with-errors .error-message {
+	color: #8a1f11;
+}
+
+#gateway-logos {
+
+text-align: center;
+padding-top: 8px;
+padding-right: 5px;
+padding-bottom: 3px;
+padding-left: 5px;
+margin-top: 10px;
+margin-right: auto;
+margin-bottom: 20px;
+margin-left: auto;
+
+}

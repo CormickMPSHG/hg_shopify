@@ -1,0 +1,33 @@
+<div class="page">
+<h2>{{ page.title }}</h2>
+<div id="modmedia-lookbooks" class="single">
+            <div id="lookbook-modmedia-container">
+            </div>            
+            {{ page.content }}
+</div>
+<script type="text/javascript">
+var modlookbook_exist=false;
+  var modlookbook_url = 'http://shopifyexpert.com.au/lookbook/assets/templates/heygorgeous.myshopify.com/mod_media_lightbox_a5fc9{{ page.id }}.js?t=1398451405';
+    var modlookbook_scripts = document.getElementsByTagName('script');
+    for (var i = modlookbook_scripts.length; i--;) {
+      if (modlookbook_scripts[i].src == modlookbook_url){
+        modlookbook_exist=true;
+      };
+    }
+  if(!modlookbook_exist){
+    Shopify.money_with_currency_format = "{{ shop.money_with_currency_format }}";
+    var s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src = "http://shopifyexpert.com.au/lookbook/assets/templates/heygorgeous.myshopify.com/mod_media_lightbox_a5fc9{{ page.id }}.js?t=1398451405";
+    document.getElementsByTagName("head")[0].appendChild(s);
+    }
+</script>
+</div>
+
+
+
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function() {
+   $("img").addClass("scale-with-grid"); 
+});
+</script>

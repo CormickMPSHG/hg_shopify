@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+
+  <!-- Yotpo Customer Reviews Installed by Dave Wechsler -->
+  
+<script type="text/javascript">
+var yotpo_app_key = "Z3YdszbUb0masETStRige3AjsW840XYIXPsgMO9Q";
+(function(){function e(){var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src="//staticwww.yotpo.com/js/yQuery.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}window.attachEvent?window.attachEvent("onload",e):window.addEventListener("load",e,!1)})();
+</script>
+
+  <!-- End Yotpo Customer Reviews install by Dave Wechsler -->
+  
+ 
+  
+  <!-- Google Web Fonts
+================================================== -->
+  
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans|Arvo|Playfair+Display|Lora|PT+Sans+Narrow|Ubuntu|PT+Serif|Lobster|Rokkitt|Copse|Antic|Dynalight|Droid+Serif|Open+Sans|Raleway:300|Bentham|Playball|Merriweather|Oswald' rel='stylesheet' type='text/css'>
+  
+  <!-- Basic Page Needs
+================================================== -->
+
+  {% if template == 'index' %}
+  <title>{{ shop.name }} | {{ page_title }}</title>
+  {% elsif template == '404' %}
+  <title>Page Not Found | {{ shop.name }}</title>
+  {% else %}
+  <title>{{ page_title }} | {{ shop.name }}</title>
+  {% endif %}
+  {% assign maxmeta = 155 %}
+  {% if template contains 'product' %}
+  <meta name="description" content="{{ product.description | strip_html | strip_newlines | truncate: maxmeta | escape }}" />
+  {% elsif template contains 'page' %}
+  <meta name="description" content="{{ page.content | strip_html | strip_newlines | truncate: maxmeta | escape }}" />
+  {% elsif template == 'index' and shop.description != '' %}
+  <meta name="description" content="{{ shop.description | strip_html | strip_newlines | truncate: maxmeta | escape}}" />
+  {% endif %}
+  <link rel="canonical" href="{{ canonical_url }}" />
+  
+  
+  <!-- Mobile Specific Metas
+================================================== -->
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  
+  <!-- CSS
+================================================== -->
+  
+  {{ 'base.css' | asset_url | stylesheet_tag }}
+  {{ 'skeleton.css' | asset_url | stylesheet_tag }}
+  {{ 'layout.css' | asset_url | stylesheet_tag }}
+  {{ 'stylesheet.css' | asset_url | stylesheet_tag }}
+  {{ 'flexslider.css' | asset_url | stylesheet_tag }}
+  {{ 'colorbox.css' | asset_url | stylesheet_tag }}
+  {{ 'chosen.css' | asset_url | stylesheet_tag }}
+  
+  {% if template == 'index' %}
+  {{ 'jquery.fancybox.css' | asset_url | stylesheet_tag }}
+  {% endif %}
+  
+  
+  <!--[if IE 7]>
+{{ 'ie7.css' | asset_url | stylesheet_tag }}
+<![endif]-->
+  
+  <!--[if lt IE 9]>
+<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+  
+  <!-- JS
+
+================================================= -->
+  
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+  {{ 'theme.js' | asset_url | script_tag }}  
+  {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+  {{ 'jquery.flexslider.js' | asset_url | script_tag }}
+  {{ 'jquery.colorbox.js' | asset_url | script_tag }}
+  {{ 'jquery.easing.1.3.js' | asset_url | script_tag }}
+  {{ 'chosen.jquery.js' | asset_url | script_tag }}
+  
+  {% if template == 'index' %}
+  {{ 'jquery.fancybox.pack.js' | asset_url | script_tag }}
+  {{ 'instafeed.js' | asset_url | script_tag }}
+  {% endif %}  
+  
+  <!--[if (gte IE 6)&(lte IE 8)]>
+{{ 'selectivizr-min.js' | asset_url | script_tag }}
+<![endif]-->   
+  
+  {{ content_for_header }}
+  
+  {% if template contains 'customers' %}
+  {{ "shopify_common.js" | shopify_asset_url | script_tag }}
+  {{ "customer_area.js"  | shopify_asset_url | script_tag }}
+  {% endif %}
+  
+  <!-- Favicons
+================================================== -->
+  <!-- <link rel="shortcut icon" href="{{ 'favicon.ico' | asset_url }}" type="image/x-icon" /> -->
+ <link rel="shortcut icon" href="{{ 'favicon.png' | asset_url }}">  
+  
+</head>
+
+<body class="{{ page.handle }}">
+
+  <div id="wrapper" class="container">
+    <div id="header" class="sixteen columns">	
+      
+	  <ul id="cart" class="row">
+        {% if shop.customer_accounts_enabled %}
+        <li>
+          
+          {% if customer  %}
+          <a href="/account">My Account</a> {{ "| Logout" | customer_logout_link }} 
+          {% else %}
+          {{ "Sign in" | customer_login_link }} or {{ 'Create an account' | customer_register_link }}
+          {% endif %}
+          
+          {% endif %}
+        </li>
+        {% if cart.item_count != 0 %}
+        <li>
+          <a href="/cart">View Cart: ({{ cart.item_count }})</a>
+        </li>
+        {% endif %}
+      </ul>
+      
+      <div id="logo">
+        <h1 style="font-size: 44px">{% if settings.use_logo_image %}
+          <a href="/"><img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" style="border: 0;" class="scale-with-grid"/></a>
+          {% else %}
+          <a href="/">{{ shop.name }}</a>
+          {% endif %}</h1>
+      </div> 
+      {% if settings.search-check %}    
+      <div id="search">
+        <form action="/search" method="get">
+          <input type="text" name="q" id="q" class="search-field" placeholder="search..." />
+          <input type="image" src="{{ 'btn-search.png' | asset_url }}" class="search-button" name="search-button" id="seek" />
+        </form>
+      </div>
+      {% endif %}
+      
+      <div class="clear"></div>
+    </div>
+    
+    <div id="navigation" class="sixteen columns">
+      <nav class="primary">
+        <ul id="nav">
+          {% for link in linklists.main-menu.links %}
+          <li {% if link.active %} class="active"{% endif %}>{{ link.title | link_to: link.url }}
+            {% capture child_list_handle %}{{ link.title | handleize }}{% endcapture %}
+            {% if linklists[child_list_handle] and linklists[child_list_handle].links.size > 0 %}
+            <div class="arrow-down"></div>
+            <ul>
+              <div class="arrow-up"></div>
+              {% for l in linklists[child_list_handle].links %}
+              <li><a href="{{ l.url }}">{{ l.title }}</a></li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </nav>
+    </div>
+    
+    <script type="text/javascript">
+      $(document).ready(function() {
+        
+        //build dropdown
+        $("<select />").appendTo("#navigation nav");
+        
+        // Create default option "Go to..."
+        $("<option />", {
+          "selected": "selected",
+          "value"   : "",
+          "text"    : "Go to..."
+        }).appendTo("nav select");	
+        
+        // Populate dropdowns with the first menu items
+        $("ul#nav li a").each(function() {
+          var el = $(this);
+          $("<option />", {
+            "value"   : el.attr("href"),
+            "text"    : el.text()
+          }).appendTo("nav select");
+        });
+        
+        //make responsive dropdown menu actually work			
+        $("nav select").change(function() {
+          window.location = $(this).find("option:selected").val();
+        });
+        
+      });	
+    </script>  
+    
+    <div id="content" class="sixteen columns">
+      {% if template != "index" %}
+      
+      <!-- DAVE COMMENTING OUT
+		<div id="breadcrumb">
+        <a href="/" class="homepage-link" title="Back to the frontpage">Home</a>
+        {% if template contains "product" %}
+        {% if collection %}            
+        <span class="separator">&raquo;</span> 
+        {% if collection.handle %}
+        {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+        {{ collection.title | link_to: url }}
+        {% elsif collection.all_products_count > 0 and collection.products.first.type == collection.title %}
+        {{ collection.title | link_to_type }}
+        {% elsif collection.all_products_count > 0 and collection.products.first.vendor == collection.title %}
+        {{ collection.title | link_to_vendor }}
+        {% endif %}
+        {% else %}
+        <span class="separator">&raquo;</span> 
+        {{ product.type | link_to_type }}
+        {% endif %}
+        <span class="separator">&raquo;</span>
+        <span class="page-title">{{ page_title }}</span>
+        {% elsif template == "article" %}
+        <span class="separator">&raquo;</span> 
+        {{ blog.title | link_to: blog.url }}
+        <span class="separator">&raquo;</span>
+        <span class="page-title">{{ page_title }}</span>
+        {% elsif template contains "collection" %}
+        {% if current_tags.size > 0 %}
+        <span class="separator">&raquo;</span>
+        {{ collection.title | link_to: collection.url }}
+        <span class="separator">&raquo;</span>
+        <span class="page-title">{{ current_tags.first }}</span>
+        {% else %}
+        <span class="separator">&raquo;</span>
+        <span class="page-title">{{ page_title }}</span>
+        {% endif %}
+        {% else %}
+        <span class="separator">&raquo;</span>
+        <span class="page-title">{{ page_title }}</span>
+        {% endif %}
+        </div>
+	 -->
+      
+      {% else %}{% endif %}
+      {% if template == 'list-collections' %}
+      {% include 'collection-listing' %}
+      {% else %}
+      {{ content_for_layout }}
+      {% endif %}
+      
+    </div>
+    <div class="clear"></div>   
+    {% if template != 'index' %}
+    <div class="row"></div>
+    {% endif %}
+  </div>
+  
+  <div id="footer">
+    <div class="container">
+      <ul id="big-footer" class="sixteen columns">
+        <div class="four columns alpha">
+          <a href="/pages/about-us">About Us</a>
+          <a href="/pages/about-us"><p>{{ settings.footer_text }}</p></a>
+        </div>
+        
+        <li class="four columns">
+          <a href="http://www.heygorgeous.com/products/gift-card">Gift Certificates</a>
+          <!-- <h4>Recent News</h4> -->
+          {% for article in blogs.[settings.homepage-blog].articles limit: 3 %}
+          <ul>
+            <li>
+              <a href="{{article.url}}">{{ article.title }}</a>
+            </li>
+          </ul>
+          {% endfor %}                
+        </li>
+        
+        <li class="four columns">
+          <!--<h4>Customer Care</h4> -->
+          {% for link in linklists.footer.links %}
+          <ul>
+            <li>{{ link.title | link_to: link.url }}</li>
+          </ul>
+          {% endfor %}
+        </li>
+        
+        <li class="four columns omega"><a href="http://www.heygorgeous.com/pages/email-signup">Email Alerts, Specials and Notifications</a>
+          <!-- 
+		<h4>Connect</h4>
+          {% if settings.show_facebook %}<a href="{{ settings.facebook_url }}"><img src="{{ 'Facebook.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_twitter %}<a href="http://www.twitter.com/{{ settings.twittername }}"><img src="{{ 'Twitter.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_pinterest %} <a href="{{ settings.pinterest_url }}"><img src="{{ 'Pinterest.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_tumblr %} <a href="{{ settings.tumblr_url }}"><img src="{{ 'Tumblr.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_flickr %} <a href="{{ settings.flickr_url }}"><img src="{{ 'Flickr.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_youtube %} <a href="{{ settings.youtube_url }}"><img src="{{ 'YouTube.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_googleplus %} <a href="{{ settings.googleplus_url }}"><img src="{{ 'GooglePlus.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_vimeo %} <a href="{{ settings.vimeo_url }}"><img src="{{ 'Vimeo.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_rss %} <a href="http://rutherford-romaguera2611.myshopify.com/blogs/{{ settings.homepage-blog }}.atom"><img src="{{ 'Feed.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_blogger %} <a href="{{ settings.blogger_url }}"><img src="{{ 'Blogger.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_linkedin %} <a href="{{ settings.linkedin_url }}"><img src="{{ 'LinkedIn.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_lastfm %} <a href="{{ settings.lastfm_url }}"><img src="{{ 'Last.fm.png' | asset_url }}"></a>{% endif %}
+          {% if settings.show_instagram %} <a href="http://instagram.com/{{ settings.instagram_name }}"><img src="{{ 'instagram.png' | asset_url }}"></a>{% endif %}
+          {% include 'mailing' %}
+		-->
+          
+        </li>  
+      </ul>
+      <div id="close" class="eight columns">
+        {% if settings.american_express %}<img src="{{ 'amex.png' | asset_url }}"/>{% endif %}
+        {% if settings.dankort %}<img src="{{ 'dankort.png' | asset_url }}"/>{% endif %}
+        {% if settings.diners %}<img src="{{ 'diners.png' | asset_url }}"/>{% endif %}
+        {% if settings.discover %}<img src="{{ 'discover.png' | asset_url }}"/>{% endif %}
+        {% if settings.forbru %}<img src="{{ 'forbru.png' | asset_url }}"/>{% endif %}
+        {% if settings.google %}<img src="{{ 'google.png' | asset_url }}">{% endif %}
+        {% if settings.jcb %}<img src="{{ 'jcb.png' | asset_url }}">{% endif %}
+        {% if settings.maestro %}<img src="{{ 'maestro.png' | asset_url }}"/>{% endif %}
+        {% if settings.mastercard %}<img src="{{ 'mastercard.png' | asset_url }}"/>{% endif %}
+        {% if settings.paypal %}<img src="{{ 'paypa.png' | asset_url }}"/>{% endif %}  
+        {% if settings.solo %}<img src="{{ 'solo.png' | asset_url }}"/>{% endif %}  
+        {% if settings.visa %}<img src="{{ 'visa.png' | asset_url }}"/>{% endif %}
+      </div>
+      
+      <div id="close-right" class="eight columns">
+        &copy; Copyright {{ year }}{{ shop.name }}
+      </div>
+    </div>   
+  </div>
+  
+  
+  
+{% include 'shopify-wishlist' %}
+
+<div style="display: none;"><!-- Begin MailChimp Signup Form -->
+<div id="mc_embed_signup_fancybox">
+<h2></h2>
+<form action="" method="post" id="mc-embedded-subscribe-form_fancybox" name="mc-embedded-subscribe-form_fancybox" class="validate" novalidate="">
+<div id="mce-responses_fancybox">
+<div id="mce-error-response_fancybox" class="error-msg" style="display: none;"></div>
+<div id="mce-success-response_fancybox" class="success-msg" style="display: none;"></div>
+</div>
+<div class="indicates-required"><span class="asterisk">*</span> indicates required</div>
+<div class="mc-field-group"><label for="mce-EMAIL">Email Address <span class="asterisk">*</span> </label> <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" /></div>
+<div class="mc-field-group"><label for="mce-FNAME">First Name <span class="asterisk">*</span> </label><input type="text" value="" name="FNAME" class="required" id="mce-FNAME" /></div>
+<div class="mc-field-group"><label for="mce-LNAME">Last Name <span class="asterisk">*</span> </label><input type="text" value="" name="LNAME" class="required" id="mce-LNAME" /></div>
+<div class="mc-field-group"><label for="mce-ZIPCODE">Zip Code (US only please)</label><input type="text" value="" name="ZIPCODE" id="mce-ZIPCODE" /></div>
+<div class="mc-field-group size1of2"><label for="mce-MMERGE3-month">Birthday - we will help you celebrate! <span class="asterisk">*</span> </label>
+<div class="datefield"><span class="subfield monthfield"><input type="text" pattern="[0-9]*" value="" size="2" maxlength="2" name="MMERGE3[month]" id="mce-MMERGE3-month" /></span> / <span class="subfield dayfield"><input type="text" pattern="[0-9]*" value="" size="2" maxlength="2" name="MMERGE3[day]" id="mce-MMERGE3-day" /></span> <span class="small-meta nowrap">( MM / DD )</span>
+<div class="fake-date"><input type="hidden" class="required date" id="MMERGE3-fake-date" value="" /></div>
+</div>
+</div>
+<div><center><input type="hidden" name="discountSwitcher" id="discountSwitcher" value="" /> <input type="submit" value="Send Me The Discount" name="subscribe" id="mc-embedded-subscribe" class="button" /></center></div>
+</form><br /><center><a id="closeform" href="#close"><b><span style="text-decoration: underline;">No thanks, I will shop without the discount</span></b></a></center>
+<p> </p>
+</div>
+<!--End mc_embed_signup-->
+<script>// <![CDATA[
+$(document).ready(function() {
+			//discount switcher
+			var ran_number = !!Math.round(Math.random() * 1); //creates random boolean
+			if (!ran_number) {
+              $("#mc_embed_signup_fancybox h2").html("Sign up and <br />save 20% on <br />your first order!");
+			} else {
+				$("#mc_embed_signup_fancybox h2").html("Sign up and <br />receive a $25 <br />gift certificate!");	
+			}
+			$("#discountSwitcher").val(ran_number);
+			// variable to hold request
+			var request;
+			// bind to the submit event of our form
+			$("#mc-embedded-subscribe-form_fancybox").submit(function(event){
+				// abort any pending request
+				if (request) {
+					request.abort();
+				}
+				// setup some local variables
+				var $form = $(this);
+				// let's select and cache all the fields
+				var $inputs = $form.find("input, select, button, textarea");
+				// serialize the data in the form
+				var serializedData = $form.serialize();
+			
+				// let's disable the inputs for the duration of the ajax request
+				$inputs.prop("disabled", true);
+			
+				$("#mce-error-response_fancybox").hide();
+				$('#mce-success-response_fancybox').html('Adding email address...').show();
+				$.colorbox.resize();
+				
+				// fire off the request
+				request = $.ajax({
+					url: "http://madisonplus.com/heygorgeous/list-subscribe.php",
+					type: "get",
+					data: serializedData,
+					success: function(data){
+						if(data.error == true) {
+							var errormsg = data.error_msg.join()
+							errormsg = errormsg.replace("Click here to update your profile.","");
+							$("#mce-error-response_fancybox").html(errormsg).show();
+							$('#mce-success-response_fancybox').hide();
+							$.colorbox.resize();
+						} else {
+							//$("#mce-success-response").html(data.success_msg.join());
+							window.location.replace('http://www.heygorgeous.com/pages/email-signup-confirmation');
+						}
+					},
+					error:function(data){
+						console.log(JSON.stringify(data));
+						$("#mce-error-response_fancybox").html('There was an error while submitting the form.  Please try again later.').show();
+						$('#mce-success-response_fancybox').hide();
+						$.colorbox.resize();
+					}
+				});
+			
+				// callback handler that will be called regardless
+				// if the request failed or succeeded
+				request.always(function () {
+					// reenable the inputs
+					$inputs.prop("disabled", false);
+				});
+			
+				// prevent default posting of form
+				event.preventDefault();
+			});
+			
+			//open colorbox
+			//wait 12 seconds
+			setTimeout(function () {
+				//open colorbox first visit		
+				if(document.cookie.indexOf('visited=true') == -1) {			
+					var fifteenDays = 1000*60*60*24*15;			
+					var expires = new Date((new Date()).valueOf() + fifteenDays);			
+					document.cookie = "visited=true;expires=" + expires.toUTCString();			
+					$.colorbox({				
+						'inline':true,							
+						'href':"#mc_embed_signup_fancybox",
+						'maxWidth':"95%",
+						'onComplete':function() {
+							ga('send', 'pageview', {
+							  'page': '/pop-up-email-subscribe-form',
+							  'title': 'Pop Up Email Subscribe Form'
+							});
+						},
+						'onClosed':function() {
+							ga('send', 'event', 'pop-up', 'click', 'no-thanks');
+						}
+					});		
+				}
+			}, 12000);
+			
+			//close colorbox link
+			$("#closeform").click(function() {
+				$.colorbox.close();
+			});
+		});
+// ]]></script>
+</div>
+  
+  <!-- ADROLL START -->
+  <script type="text/javascript">
+adroll_adv_id = "PDY7U7LKYZHH3FTCSFTGVR";
+adroll_pix_id = "O4RQF3AL55F3DHTPPKHQ7O";
+(function () {
+var oldonload = window.onload;
+window.onload = function(){
+   __adroll_loaded=true;
+   var scr = document.createElement("script");
+   var host = (("https:" == document.location.protocol) ? "https://s.adroll.com" : "http://a.adroll.com");
+   scr.setAttribute('async', 'true');
+   scr.type = "text/javascript";
+   scr.src = host + "/j/roundtrip.js";
+   ((document.getElementsByTagName('head') || [null])[0] ||
+    document.getElementsByTagName('script')[0].parentNode).appendChild(scr);
+   if(oldonload){oldonload()}};
+}());
+</script>
+  <!-- ADROLL END -->
+  
+  <!-- START Google Code for Remarketing Tag -->
+<!--------------------------------------------------
+Remarketing tags may not be associated with personally identifiable information or placed on pages related to sensitive categories. See more information and instructions on how to setup the tag on: http://google.com/ads/remarketingsetup
+--------------------------------------------------->
+<script type="text/javascript">
+/* <![CDATA[ */
+var google_conversion_id = 969211324;
+var google_custom_params = window.google_tag_params;
+var google_remarketing_only = true;
+/* ]]> */
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/969211324/?value=0&amp;guid=ON&amp;script=0"/>
+</div>
+</noscript>
+  <!-- END Google Code for Remarketing Tag -->
+
+  
+<!-- START Zendesk -->
+  
+<script type="text/javascript" src="//assets.zendesk.com/external/zenbox/v2.6/zenbox.js"></script>
+<style type="text/css" media="screen, projection">
+  @import url(//assets.zendesk.com/external/zenbox/v2.6/zenbox.css);
+</style>
+<script type="text/javascript">
+  if (typeof(Zenbox) !== "undefined") {
+    Zenbox.init({
+      dropboxID:   "20307028",
+      url:         "https://heygorgeous.zendesk.com",
+      tabTooltip:  "Ask Us",
+      tabImageURL: "https://p1.zdassets.com/external/zenbox/images/tab_ask_us.png",
+      tabColor:    "#00AFAF",
+      tabPosition: "Left"
+    });
+  }
+</script>
+
+  <!-- END Zendesk -->
+
+  
+</body>
+</html>

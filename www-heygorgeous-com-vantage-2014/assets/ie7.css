@@ -1,0 +1,19 @@
+ul#nav {
+	list-style-type: none;
+        height: 30px;        
+}
+
+ul#nav li {
+	display: inline-block;
+        float: left;
+}
+
+ul#nav li a {
+        display: block;
+}
+
+.down {
+    display: none;
+}
+
+

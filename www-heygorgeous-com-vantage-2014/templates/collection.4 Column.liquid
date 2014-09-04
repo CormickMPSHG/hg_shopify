@@ -1,0 +1,102 @@
+<div id="collectionpage">
+  {% paginate collection.products by 50 %}
+  
+  <div class="collection-description">
+    <h1>{{ collection.title }}</h1>
+    {{ collection.description }}
+    <script type="text/javascript" charset="utf-8">
+      $(document).ready(function() {
+        $(".collection-description img").addClass("scale-with-grid"); 
+      });
+    </script>
+  </div>
+  
+  {% if paginate.pages > 1 %}
+  <div id="paginate-bar" class="row">
+    <span class="left">
+    </span>
+    <div id="pagination">
+      {% if paginate.previous %}  {{ 'prev' | link_to: paginate.previous.url }} | {% endif %} Page {{ paginate.current_page }} of {{ paginate.pages }} {% if paginate.next %} | {{ 'Next' | link_to: paginate.next.url }}{% endif %}
+    </div>
+  </div>
+  {% endif %}
+  <div class="clear"></div>
+  
+  <div id="sorting-hat" class="row">
+    {% include 'sort' %}
+  </div>
+  
+  <ul id="four-column-collectionlist"> 
+    
+    {% for product in collection.products %}
+    <li class="collectionitem four columns" data-alpha="{{product.title}}" data-price="{{product.price}}">     
+      <div class="four-column-collection-image">
+        {% if product.price < product.compare_at_price %}<div class="sale"></div>{% endif %}
+        {% if product.available %}{% else %}<div class="gone"></div>{% endif %}
+        
+        {% if product.images.size > 1 %}      
+        <a href="{{ product.url | within: collection }}" title="{{ product.title | escape }}">
+          <img class="img1 scale-with-grid" src="{{ product.images[0] | product_img_url: 'large' }}" alt="{{ product.title | escape }}" />
+          <img class="img2 scale-with-grid" src="{{ product.images[1] | product_img_url: 'large' }}" alt="{{ product.title | escape }}" /> 
+        </a>       
+        {% else %}       
+        <a href="{{ product.url | within: collection }}" title="{{ product.title | escape }}">
+          <img class="img1 scale-with-grid" src="{{ product.images[0] | product_img_url: 'large' }}" alt="{{ product.title | escape }}" />
+        </a>
+        {% endif %}       
+        
+      </div>
+      
+      <div class="collection-products">
+        <h2>
+          <a href="{{ product.url | within: collection }}">{{ product.title | truncate: 70 }}<br /><span class="money">{{ product.price | money }}</span> {% if product.price < product.compare_at_price %} was <span class="red">{{ product.compare_at_price | money }}</span>{% endif %}</a>
+        </h2>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <script type="text/javascript" charset="utf-8">
+    $(function(){
+      $('.four-column-collection-image').each(function(){
+        if($(this).find('img').length > 1) {
+          $(this).find('.img2').hide().css('visibility', 'visible');
+          $(this).hover(function(){
+            $(this).find('.img2').stop(true,true).fadeIn("1000");
+            $(this).find('.img1').stop(true,true).fadeOut("1000").css("display", "none");
+          }, function(){
+            $(this).find('.img2').stop(true,true).fadeOut("1000").css("display", "none");
+            $(this).find('.img1').stop(true,true).fadeIn("1000");
+          });
+        }
+      });
+    }); 
+  </script>
+  
+  <div class="clear"></div>
+  
+  
+  <div id="pagination" class="sixteen columns">
+    
+    <span class="count">Showing items {{ paginate.current_offset | plus: 1 }}-{% if paginate.next %}{{ paginate.current_offset | plus: paginate.page_size }}{% else %}{{ paginate.items }}{% endif %} of {{ paginate.items }}.</span>
+    
+    {% if paginate.previous %}
+    {{ '<' | link_to: paginate.previous.url }}
+    {% endif %}
+    {% for part in paginate.parts %}
+    {% if part.is_link %}
+    {{ part.title | link_to: part.url }}
+    {% else %}
+    {% if part.title == '&hellip;' %}
+    {{ part.title }}
+    {% else %}
+    <span class="current">{{ part.title }}</span>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% if paginate.next %}
+    {{ '>' | link_to: paginate.next.url }}
+    {% endif %}
+  </div>
+  {% endpaginate %}
+</div>

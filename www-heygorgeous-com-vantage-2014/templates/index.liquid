@@ -1,0 +1,98 @@
+{% assign page = pages.frontpage %}
+
+
+{% if settings.show-home-video %}
+	<div id="homepage1" class="row">
+		<iframe src="//player.vimeo.com/video/102933803" width="940" height="528" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+	</div>
+
+{% else %}
+	<div id="homepage1" class="row">
+		<div class="flexslider">
+		  <ul class="slides">
+			<li><a href="{{ settings.slide1_url }}"><img src="{{ 'slide1.jpg' | asset_url }}" alt="{{shop.name}}" /></a></li>
+			{% if settings.slide-2-check %}<li><a href="{{ settings.slide2_url }}"><img src="{{ 'slide2.jpg' | asset_url }}" alt="{{ settings.slide1_alt }}" /></a></li>{% endif %}
+			{% if settings.slide-3-check %}<li><a href="{{ settings.slide3_url }}"><img src="{{ 'slide3.jpg' | asset_url }}" alt="{{ settings.slide2_alt }}" /></a></li>{% endif %}
+			{% if settings.slide-4-check %}<li><a href="{{ settings.slide4_url }}"><img src="{{ 'slide4.jpg' | asset_url }}" alt="{{ settings.slide3_alt }}" /></a></li>{% endif %}
+			{% if settings.slide-5-check %}<li><a href="{{ settings.slide5_url }}"><img src="{{ 'slide5.jpg' | asset_url }}" alt="{{ settings.slide5_alt }}" /></a></li>{% endif %}
+			{% if settings.slide-6-check %}<li><a href="{{ settings.slide6_url }}"><img src="{{ 'slide6.jpg' | asset_url }}" alt="{{ settings.slide6_alt }}" /></a></li>{% endif %}
+			{% if settings.slide-7-check %}<li><a href="{{ settings.slide7_url }}"><img src="{{ 'slide7.jpg' | asset_url }}" alt="{{ settings.slide7_alt }}" /></a></li>{% endif %}
+			{% if settings.slide-8-check %}<li><a href="{{ settings.slide8_url }}"><img src="{{ 'slide8.jpg' | asset_url }}" alt="{{ settings.slide8_alt }}" /></a></li>{% endif %}
+			{% if settings.slide-9-check %}<li><a href="{{ settings.slide9_url }}"><img src="{{ 'slide9.jpg' | asset_url }}" alt="{{ settings.slide9_alt }}" /></a></li>{% endif %}
+			{% if settings.slide-10-check %}<li><a href="{{ settings.slide10_url }}"><img src="{{ 'slide10.jpg' | asset_url }}" alt="{{ settings.slide10_alt }}" /></a></li>{% endif %}           
+		  </ul>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(window).load(function() {
+		  $('.flexslider').flexslider({
+			animation: "fade",
+			directionNav: true
+		  });
+		});
+	</script>
+{% endif %}
+
+
+<div class="clear"></div>
+
+
+{% if settings.promo %}
+<div class="row">
+    <div id="leftpromo" class="one-third column alpha">
+        <a href="{{ settings.leftlink }}"><img src="{{ 'leftpromo.jpg' | asset_url }}" alt="{{ settings.promo1_alt }}" style="border: 0;" class="scale-with-grid"/></a>
+    </div>
+    
+    <div id="midpromo" class="one-third column">
+        <a href="{{ settings.midlink }}"><img src="{{ 'midpromo.jpg' | asset_url }}" alt="{{ settings.promo2_alt }}" style="border: 0;" class="scale-with-grid"/></a>
+    </div>
+    
+    <div id="rightpromo" class="one-third column omega">         
+        <a href="{{ settings.rightlink }}"><img src="{{ 'rightpromo.jpg' | asset_url }}" alt="{{ settings.promo3_alt }}" style="border: 0;" class="scale-with-grid"/></a>
+    </div>
+</div>
+{% endif %}
+
+{% if settings.frontpage-text-area %}
+<hr>
+    <div class="row">
+    <h1>{{ pages.frontpage.title }}</h1>
+    <p>
+    {{ pages.frontpage.content }}</p>
+    </div>
+<hr>
+{% endif %}
+
+<div class="clear"></div>
+
+{% if settings.show-instagram-feed %}    
+{% assign url = '{{image}}' %}
+{% assign caption = '{{caption}}' %}
+<div id="instagram-card" class="row">
+  <div class="section-title lines"><h4><a href="http://instagram.com/{{ settings.instagram_name }}" target="_blank">Follow @{{ settings.instagram_name }}</a> on Instagram</h4></div>  
+  <div id="instafeed"></div>
+  <script type="text/javascript">
+    var userFeed = new Instafeed({
+      get: 'user',
+      userId: {{ settings.instagram-user-id }},
+      accessToken: '{{ settings.instagram-access-token }}',
+      template: '<a class="fancybox two columns padded" href="{{url}}" rel="ig" title="{{ caption }}"><img class="instagram-image scale-with-grid" src="{{ url }}" /></a>'
+    });
+    userFeed.run();        
+  </script>
+</div>
+{% endif %}  
+
+
+
+<script>
+    // Call Fancybox globally on all elemnets with class "fancybox"
+  $(".fancybox").fancybox({
+    helpers: {
+      overlay: {
+        locked: false
+      }
+    }
+  });  
+  
+</script>

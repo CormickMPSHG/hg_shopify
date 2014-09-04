@@ -1,0 +1,62 @@
+<h2>My Shopping Bag</h2>
+<p>
+  <center><h2><font color="#E3319D">Coupons and discount codes applied on last page prior to checkout</font></h2></center></p>
+{% if cart.item_count == 0 %}
+    <p>Your Bag is currently empty.</p>
+
+
+{% else %}
+<script type="text/javascript">
+  function remove_item(id) {
+      document.getElementById('updates_'+id).value = 0;
+      document.getElementById('cartform').submit();
+  }
+</script>
+<form action="/cart" method="post" id="cartform">
+	<table id="basket">
+    <thead>
+	    <tr>
+			<th colspan="2">Item</th>
+			<th>Price</th>
+			<th style="text-align: center">Qty</th>
+			<th>Delete</th>
+			<th>Total</th>
+		</tr>
+    </thead>
+    <tbody>
+    {% for item in cart.items %}
+		<tr>
+			<td>
+				<div class="product_image">
+				  <a href="{{ item.product.url }}">
+					<img src="{{ item.product.featured_image | product_img_url: 'compact' }}"  alt="{{ item.product.title }}" />
+				  </a>
+				</div>
+			</td>
+			<td>
+				<p><a href="{{ item.product.url }}">{{ item.title }}</a></p>
+			</td>
+			<td><p>{{ item.price | money }}{% if item.variant.compare_at_price > item.price %}<br /><del>{{ item.variant.compare_at_price | money }}</del>{% endif %}</p></td>
+			<td><input type="text" size="4" name="updates[{{ item.id }}]" id="updates_{{ item.variant.id }}" value="{{ item.quantity }}" onfocus="this.select();"/></td>
+			<td><a href="#" onclick="remove_item({{ item.variant.id }}); return false;">Remove</a></td>
+			<td>{{ item.line_price | money }}</td>
+		</tr>{% endfor %}
+    </tbody>
+	</table>
+	<div id="basket-right">
+		<h3>Subtotal {{ cart.total_price | money }}</h3>
+        <input type="submit" name="update" id="update-cart" value="Update" class="styled-button" />
+        <input type="submit" name="checkout" id="checkout" value="Proceed to SECURE Checkout" class="styled-button" />
+        <div class="clear"></div>
+        <div class="orpaypal">Or, checkout with</div>
+        {{ content_for_additional_checkout_buttons }}
+
+	</div>  
+
+
+</form>{% endif %}
+{% if settings.show_recent_products %}
+{% include 'recently-viewed' %}
+{% endif %}
+
+

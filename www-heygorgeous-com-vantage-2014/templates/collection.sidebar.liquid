@@ -1,0 +1,164 @@
+
+
+<div id="collectionpage">
+  {% paginate collection.products by 99 %}
+ 
+  <div class="collection-description" style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid {{ settings.dotted_color }}">
+    
+  	
+ <!--	
+	{% if collection.title contains 'Lawley' %}
+      <center><font color="#ff00ff">   Save 40% on Robyn Lawley Swim with coupon code <b>RL40</b> at checkout</font></center>
+        {% endif %}
+  -->
+    
+    <h1>{{ collection.title }}</h1>
+    <!-- {{ collection.description }} --> 
+    <script type="text/javascript" charset="utf-8">
+      $(document).ready(function() {
+        $(".collection-description img").addClass("scale-with-grid"); 
+      });
+    </script>
+  </div>
+  
+  {% if paginate.pages > 1 %}
+  <div id="paginate-bar" class="row">
+    <span class="left">
+    </span>
+    <div id="pagination">
+      {% if paginate.previous %}  {{ 'prev' | link_to: paginate.previous.url }} | {% endif %} Page {{ paginate.current_page }} of {{ paginate.pages }} {% if paginate.next %} | {{ 'Next' | link_to: paginate.next.url }}{% endif %}
+    </div>
+  </div>
+  {% endif %}
+  <div class="clear"></div>
+  
+   
+  <div id="collection-sidebar" class="four columns alpha">
+	<a id="dropdown" href="#" title="Click This Button">Menu</a>
+    <div class="dropdownwrap">
+    <h4>{{ settings.collection-linklist-1-title }}</h4>
+      <div class="sidenav">
+        <ul>
+            {% for link in linklists.[settings.collection-side-1].links %}
+                <li>{{ link.title | link_to: link.url }}</li>
+            {% endfor %}
+        </ul>
+      </div>
+    {% include 'sidesort' %}
+    </div>
+  </div>
+  
+  <script>
+    $(document).ready(function(e){
+      $('#dropdown').on('click',function(){
+        $('.dropdownwrap').slideToggle();
+      });
+      
+    })
+  </script>
+ 
+  
+  <ul id="two-column-collectionlist" class="twelve columns omega"> 
+    {% for product in collection.products %}
+    <li class="collectionitem four columns{% cycle ' alpha', '', ' omega' %}" data-alpha="{{product.title}}" data-price="{{product.price}}">     
+      <div class="two-column-collection-image">
+        {% if product.price < product.compare_at_price %}<div class="sale"></div>{% endif %}
+        {% if product.available %}{% else %}<div class="gone"></div>{% endif %}
+        
+        {% if product.images.size > 1 %}      
+        <a href="{{ product.url | within: collection }}" title="{{ product.title | escape }}">
+          <img class="img1 scale-with-grid" src="{{ product.images[0] | product_img_url: 'large' }}" alt="{{ product.title | escape }}" />
+          <img class="img2 scale-with-grid" src="{{ product.images[1] | product_img_url: 'large' }}" alt="{{ product.title | escape }}" /> 
+        </a>       
+        {% else %}       
+        <a href="{{ product.url | within: collection }}" title="{{ product.title | escape }}">
+          <img class="img1 scale-with-grid" src="{{ product.images[0] | product_img_url: 'large' }}" alt="{{ product.title | escape }}" />
+        </a>
+        {% endif %}     
+        
+      </div>
+      
+      <div class="collection-products">
+        <h2>
+          <a href="{{ product.url | within: collection }}">{{ product.title | truncate: 70 }}<br /><span class="money">{{ product.price | money }}<br /></span> {% if product.price < product.compare_at_price %} was <span class="red">{{ product.compare_at_price | money }}</span>{% endif %}</a>
+             
+     		{% if product.tags contains 'RLPRESALE' %}
+          <br />
+      <center><font color="#ff00ff">Exclusively at Hey Gorgeous!</font></center>
+    		 {% endif %}
+
+          
+          <!--
+          {% if product.tags contains 'SUMSALE' %}
+          <br />
+      <center><font color="#ff00ff">Save 30% on this today!</font></center>
+     		{% endif %}
+
+          
+		  <font color="#ff00ff">Free US Shipping through Monday at Midnight ET</font>
+        
+          {% if product.tags contains 'RL40' %}
+                {% unless product.tags contains 'exclude' %}
+
+          <font color="#ff00ff">Save 40% Today</font>   
+          {% endunless %}
+          {% endif %}
+		  -->
+          
+		</h2>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <script type="text/javascript" charset="utf-8">
+    $(function(){
+      $('.two-column-collection-image').each(function(){
+        if($(this).find('img').length > 1) {
+          $(this).find('.img2').hide().css('visibility', 'visible');
+          $(this).hover(function(){
+            $(this).find('.img2').stop(true,true).fadeIn("1000");
+            $(this).find('.img1').stop(true,true).fadeOut("1000").css("display", "none");
+          }, function(){
+            $(this).find('.img2').stop(true,true).fadeOut("1000").css("display", "none");
+            $(this).find('.img1').stop(true,true).fadeIn("1000");
+          });
+        }
+      });
+    }); 
+  </script>
+
+  
+  <div class="clear"></div>
+  
+  <div id="pagination" class="sixteen columns">
+    
+    <span class="count">Showing items {{ paginate.current_offset | plus: 1 }}-{% if paginate.next %}{{ paginate.current_offset | plus: paginate.page_size }}{% else %}{{ paginate.items }}{% endif %} of {{ paginate.items }}.</span>
+    
+    {% if paginate.previous %}
+    {{ '<' | link_to: paginate.previous.url }}
+    {% endif %}
+    {% for part in paginate.parts %}
+    {% if part.is_link %}
+    {{ part.title | link_to: part.url }}
+    {% else %}
+    {% if part.title == '&hellip;' %}
+    {{ part.title }}
+    {% else %}
+    <span class="current">{{ part.title }}</span>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% if paginate.next %}
+    {{ '>' | link_to: paginate.next.url }}
+    {% endif %}
+ 
+     <br /><br />
+   <font size="1">{{ collection.description }}</font>
+
+  </div>
+  {% endpaginate %}
+
+</div>
+
+

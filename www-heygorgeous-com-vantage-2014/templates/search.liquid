@@ -1,0 +1,72 @@
+<div id="search-page">
+{% if search.performed %}     
+    {% paginate search.results by 30 %}  
+
+<div id="paginate-bar" class="row">
+    <span class="left">
+    </span>
+    <span class="right">
+        {% if paginate.pages > 1 %}
+        {% if paginate.previous %}  {{ 'prev' | link_to: paginate.previous.url }} | {% endif %} Page {{ paginate.current_page }} of {{ paginate.pages }} {% if paginate.next %} | {{ 'Next' | link_to: paginate.next.url }}{% endif %}
+        {% endif %}
+    </span>
+</div>
+
+<div id="searchresults">  
+    
+      {% if search.performed %}
+	
+		{% if search.results == empty %}  
+		  <p>Your search for "{{search.terms | escape}}" did not yield any results</p>              
+		{% else %}     
+
+		  <div id="collection-sidebar" class="four columns alpha">
+			<a id="dropdown" href="#" title="Click This Button">Menu</a>
+			<div class="dropdownwrap">
+			<h4>{{ settings.collection-linklist-1-title }}</h4>
+			  <div class="sidenav">
+				<ul>
+					{% for link in linklists.[settings.collection-side-1].links %}
+						<li>{{ link.title | link_to: link.url }}</li>
+					{% endfor %}
+				</ul>
+			  </div>
+			{% include 'sidesort' %}
+			</div>
+		  </div>
+  
+		  <script>
+			$(document).ready(function(e){
+			  $('#dropdown').on('click',function(){
+				$('.dropdownwrap').slideToggle();
+			  });
+	  
+			})
+		  </script>
+ 
+             <ul id="two-column-collectionlist" class="twelve columns omega"> 
+ 
+		    {% for item in search.results %}      
+                <li class="four columns"> 
+                    <div class="two-column-collection-image">              
+                      <a href="{{item.url}}" title="">
+                      <img src="{{ item.featured_image | product_img_url: 'large' }}" class="scale-with-grid">
+                      </a>
+                    </div>
+                    
+                    <div class="collection-products">
+                      {{ item.title | link_to: item.url }}
+                    </div>
+            
+                </li>
+              {% endfor %}
+              </ul>           
+		{% endif %}
+
+	  {% endif %}
+
+
+        {% endpaginate %}
+        {% endif %}
+</div>
+</div>

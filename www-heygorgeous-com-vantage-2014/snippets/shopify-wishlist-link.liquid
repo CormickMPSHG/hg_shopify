@@ -1,0 +1,19 @@
+<!--
+*******************************************************************************
+Shopify Wishlist App Automation v2.1 - Feb 3rd, 2014
+*******************************************************************************
+-->
+
+{{ 'sessvars.js' | asset_url | script_tag }}
+
+{% if customer %}
+<a href="#" onclick="wishlist_post_to_url('{{ shop.url }}/apps/wishlist/', { CustomerId: '{{ customer.id }}' }); return false;">Wishlist</a>
+{% else %}
+<a href="" onclick="sessvars.wishlistRedirect = true;window.open('/account/login','_self'); return false;">Wishlist</a>
+{% endif %}
+
+<!--
+*******************************************************************************
+EOF
+*******************************************************************************
+-->

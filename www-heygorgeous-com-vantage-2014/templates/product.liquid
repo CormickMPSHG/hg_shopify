@@ -1,0 +1,329 @@
+<div id="product-{{ product.id }}">
+  
+  <div id="richsnippet" style="display:none;visibility:hidden;">
+    <div itemscope itemtype="http://data-vocabulary.org/Product">
+      <span itemprop="brand">{{ product.vendor }}</span>
+      <span itemprop="name">{{ product.title | escape }}</span>
+      <img itemprop="image" src="{{ product.images[0] | product_img_url: "large" }}" />
+      <span itemprop="description">{{ product.description }}</span>
+      Category: <span itemprop="category" content="{{ product.type }}">{{ product.type }}</span>
+      Product #: <span itemprop="identifier" content="sku:{{ product.variants[0].sku }}">{{ product.variants[0].sku }}</span>
+      <span itemprop="offerDetails" itemscope itemtype="http://data-vocabulary.org/Offer">
+        Regular price: {{ product.price | money }}
+        <meta itemprop="currency" content="{{ shop.currency }}" />
+        $<span itemprop="price">{{ product.price | money }}</span>
+        Available from: <span itemprop="seller">{{ shop.url }}</span>
+        {% if product.available == 'true' %}
+        <span itemprop="availability" content="in_stock">In stock</span>
+        {% endif %}
+      </span>
+    </div>
+  </div><!-- end richsnippet -->
+  
+  <!--- For Mobile --->
+  <div id="mobile-product" class="eight columns alpha">
+    <div class="flexslider">
+      <ul class="slides">    
+        {% for image in product.images %}
+        <li><img src="{{ image.src | product_img_url: 'grande' }}" alt="{{ image.alt | escape }}" class="scale-with-grid"></li>
+        {% endfor %}      
+      </ul>
+    </div>  
+    <script type="text/javascript">
+      $(window).load(function() {
+        $('.flexslider').flexslider({
+          animation: "fade",
+          directionNav: false
+        });
+      });
+    </script>
+  </div>   
+  
+  <!--- For Desktop --->
+  
+  <div id="product-images" class="eight columns alpha">
+    
+    <div id="product-photos">
+      
+      <div id="product-photo-container">
+        {% for image in product.images %}{% if forloop.first %}
+        <a class="gallery" href="{{ image.src | product_img_url: 'original' }}" rel="gallery">
+          <img src="{{ image.src | product_img_url: 'large' }}" alt="{{ image.alt | escape }}" class="scale-with-grid"/>
+        </a>
+        {% endif %}{% endfor %}
+      </div>
+      
+      {% if product.images.size > 1 %}
+      <ul id="product-photo-thumbs">
+        {% for image in product.images %}
+        <li class="product-photo-thumb">
+          <img src="{{ image.src | product_img_url: 'large' }}" alt="{{ image.alt | escape }}" class="scale-with-grid" />
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      
+    </div>
+    <script>
+      jQuery('#product-photo-container a').colorbox();
+      //when thumb is clicked, set main image to it
+      $('ul#product-photo-thumbs img').click( function() {
+        $('#product-photo-container a').prop('href', $(this).prop('src').replace(/(_small)|(_compact)|(_medium)|(_large)|(_grande)/, ''));
+        $('#product-photo-container img').prop('src', $(this).prop('src'));
+        return true;  //stop link from navigating
+      })                   
+    </script>
+  </div>
+  
+  <div id="product-description" class="eight columns omega">
+    
+    <h1>{{ product.title | escape }}
+      <h4><a href="/collections/{{ product.vendor | handleize }}">{{ product.vendor }}</a></h4>
+      
+     
+      <!--
+		<br />
+      <font color="#ff00ff">FREE US shipping on all orders until Monday (6/30) Midnight ET</font>
+   
+      
+   		{% if product.tags contains 'RLPRESALE' %}
+          <br />
+      <center><font color="#ff00ff">Available Exclusively for Pre-Order at Hey Gorgeous!</font></center>
+     {% endif %}
+      
+   		{% if product.tags contains 'SUMSALE' %}
+          <br />
+      <center><font color="#ff00ff">Save 30% Today On This Item With Code <b>SUMMER30</b> at Checkout</font></center>
+     {% endif %}
+	--> 
+      
+      <p id="product-price">
+        {% if product.available %}
+        {% if product.compare_at_price > product.price %}
+        <span class="product-price" itemprop="price">{{ product.price | money }}</span>&nbsp;<span class="was">{{ product.compare_at_price | money }}</span>
+        {% else %}
+        <span class="product-price" itemprop="price">{{ product.price | money }}</span>
+        {% endif %}
+        {% else %}
+        <span class="product-price" itemprop="price">Sold Out</span>
+        {% endif %}
+      </p>  
+    <!-- Yotpo Customer Reviews Installed by Dave Wechsler -->
+    <div class="yotpo bottomLine"
+      data-appkey="Z3YdszbUb0masETStRige3AjsW840XYIXPsgMO9Q"
+      data-domain="{{ shop.permanent_domain | escape }}"
+      data-product-id="{{ product.id }}"
+      data-product-models="{{ product.id }}"
+      data-name="{{ product.title | escape }}"
+      data-url="{{ page.url }}"
+      data-image-url="{{ product.featured_image | product_img_url: "large" |replace: '?', '%3F' | replace: '&','%26'}}"
+      data-description="{{ product.description | escape }}"
+      data-bread-crumbs="{% for tag in product.tags %}{{ tag | escape }};{% endfor %}">
+    </div>
+    <!-- End of Yotpo Customer Reviews Installed by Dave Wechsler -->
+    </h1>  
+    
+    <form action="/cart/add" method="post" data-money-format="{{ shop.money_format }}" id="product-form-{{ product.id }}">
+      {% if product.options.size > 1 %}
+      <div class="select">
+        <select id="product-select-{{ product.id }}" name='id'>
+          {% for variant in product.variants %}
+          <option value="{{ variant.id }}">{{ variant.title }}</option>
+          {% endfor %}
+        </select>
+      {% for option in product.options %}
+      {% include 'swatch' with option %}
+      {% endfor %}        
+      </div>
+
+      {% elsif product.options.size == 1 and product.variants.size > 1 %}
+      <div class="select">
+        <label>{{ product.options[0] }}</label>
+        <select id="product-select-{{ product.id }}" name='id'>
+          {% for variant in product.variants %}
+          <option value="{{ variant.id }}">{{ variant.title }}</option>
+          {% endfor %}
+        </select>
+      {% for option in product.options %}
+      {% include 'swatch' with option %}
+      {% endfor %}        
+      </div>
+      {% else %}
+      <div class="what-is-it">
+        {% if product.options.first != 'Title' %}
+        <label>{{ product.options.first }}:</label>{% for variant in product.variants %}<span class="it-is">{{ variant.option1 | escape }}</span>{% endfor %}
+        {% endif %}
+      </div>
+      <div class="product-variants"></div><!-- product variants -->  
+      <input  type="hidden" id="{{ variant.id }}" name="id" value="{{ product.variants[0].id }}" />    
+      {% endif %}
+      
+       {% if product.available %}          
+      <input type="submit" name="button" class="add" value="Add to Cart" />
+      {% endif %}
+      
+    </form>    
+    
+    
+    
+    <div class="desc">
+      <div id="soc">
+        {% include 'social' with product %}
+      </div>
+      <!--<h4>Product details</h4> -->
+      
+      <center><strong>
+		{% if product.metafields.inventory.drop_or_stock == "DROP" %}
+			** Item usually ships in approximately 7 days. **
+		{% elsif product.metafields.inventory.drop_or_stock == "STOCK" %}
+			** Item usually ships within 48 hours. **
+		{% elsif product.metafields.inventory.drop_or_stock == "MTO" %}
+			** Made to order and usually ships within 5-7 days. **
+		{% elsif product.metafields.inventory.drop_or_stock == "PREORDER" %}
+			** This item is pre-order **
+		{% endif %}
+	  </strong></center>
+      
+      <br />{{ product.description }}<br />
+
+		{% assign modelSnippetName = "model-" | append: product.metafields.inventory.model_name %}
+		{% capture snippetContent %}{% include modelSnippetName %}{% endcapture %}
+		{% unless snippetContent contains "Liquid error" %}
+			<!-- <strong>Model:</strong><br /> -->
+      {% include modelSnippetName %} <p> </p>
+		{% endunless %}
+      
+		{% assign canReturn = true %} 
+		{% for collection in product.collections %}
+			{% if collection.title contains "Swim" || collection.title contains "Intimates" %}
+				{% assign canReturn = false %}
+			{% endif %}
+		{% endfor %}		
+		{% if canReturn == false %}
+		
+      <!-- <p><strong>Returns:</strong><br /> -->
+		<!-- ****** Dave - edit this ******* -->
+	<!--			Here is the extra text saying that this item can't be returned.</p> -->
+		{% endif %}
+      
+      <ul class="accordion">
+
+		{% assign vendorHandle = product.vendor | handleize %}
+		{% assign vendorSizechart = "sizechart-" | append: vendorHandle %}
+		{% capture snippetContent %}{% include vendorSizechart %}{% endcapture %}
+		{% unless snippetContent contains "Liquid error" %}
+			<li id="two" class="size">
+			  <a href="#two"><h4>{{ settings.tab1_title }}</h4></a>
+			  <ul class="sub-menu">					
+				<li>{% include vendorSizechart %}</li>
+			  </ul>
+			</li>
+	    {% endunless %}
+
+		{% assign vendorDescription = "vendor-" | append: vendorHandle %}
+		{% capture snippetContent %}{% include vendorDescription %}{% endcapture %}
+		{% unless snippetContent contains "Liquid error" %}
+			<li id="three" class="delivery">
+				<a href="#three"><h4>{{ settings.tab2_title }}</h4></a>
+				<ul class="sub-menu">
+					<li>{% include vendorDescription %}</li>
+				</ul>
+			</li>
+		{% endunless %}
+
+        {% unless settings.tab3 == blank or product.title == "Gift Card" %}
+        <li id="four" class="returns">
+          <a href="#four"><h4>{{ settings.tab3_title }}</h4></a>
+          <ul class="sub-menu">					
+            <li>{{ settings.tab3 }}</li>
+          </ul>
+        </li>
+        {% endunless %}	
+      </ul>
+            
+      <script type="text/javascript">
+        $(document).ready(function() {
+          // Store variables			
+          var accordion_head = $('.accordion > li > a'),
+              accordion_body = $('.accordion li > .sub-menu');
+          // Click function
+          accordion_head.on('click', function(event) {
+            // Disable header links				
+            event.preventDefault();
+            // Show and hide the tabs on click
+            if ($(this).attr('class') != 'active'){
+              accordion_body.slideUp('normal');
+              $(this).next().stop(true,true).slideToggle('normal');
+              accordion_head.removeClass('active');
+              $(this).addClass('active');
+            } else {
+              accordion_body.slideUp('normal');
+              accordion_head.removeClass('active');
+            }
+          });
+        });
+      </script>
+      
+    </div>
+    
+  </div>
+  
+  <div class="clear"></div>
+  
+  {% if settings.show_related_products %}
+  <div id="recent">
+    {% include 'related-products' %}
+  </div>
+  {% endif %}
+  
+  
+  
+{% if product.variants.size > 1 or product.options.size > 1 %}
+<script type="text/javascript">
+  
+  $(function() {
+    
+    $product = $('#product-' + {{ product.id }});
+    new Shopify.OptionSelectors("product-select-{{ product.id }}", { product: {{ product | json }}, onVariantSelected: selectCallback });
+
+	{% assign found_one_in_stock = false %}
+    {% for variant in product.variants %}
+    {% if variant.available and found_one_in_stock == false %}
+    {% assign found_one_in_stock = true %}
+    {% for option in product.options %}
+    jQuery('#product-{{ product.id }} .single-option-selector:eq({{ forloop.index0 }})').val({{ variant.options[forloop.index0] | json }}).trigger('change');
+     {% endfor %}
+     {% endif %}
+     {% endfor %}       
+    
+    jQuery('.swatch :radio').change(function() {
+      var optionIndex = jQuery(this).parents('.swatch').attr('data-option-index');
+      var optionValue = jQuery(this).val();
+      jQuery('#product-{{ product.id }} .single-option-selector').eq(optionIndex).find('option').filter(function() { return jQuery(this).text() == optionValue }).parent().val(optionValue).trigger('change');
+    }); 
+       
+  });      
+      
+</script>
+{% endif %}
+
+
+
+
+  
+</div>
+
+<!-- Yotpo Customer Reviews Installed by Dave Wechsler -->
+<div class="yotpo reviews"
+data-appkey="Z3YdszbUb0masETStRige3AjsW840XYIXPsgMO9Q"
+data-domain="{{ shop.permanent_domain | escape }}"
+data-product-id="{{ product.id }}"
+data-product-models="{{ product.id }}"
+data-name="{{ product.title | escape }}"
+data-url="{{ page.url }}"
+data-image-url="{{ product.featured_image | product_img_url: "large" |replace: '?', '%3F' | replace: '&','%26'}}"
+data-description="{{ product.description | escape }}"
+data-bread-crumbs="{% for tag in product.tags %}{{ tag | escape }};{% endfor %}">
+</div>
+
+<!-- Endof Yotpo Customer Reviews Installed by Dave Wechsler -->

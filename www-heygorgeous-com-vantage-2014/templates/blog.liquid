@@ -1,0 +1,59 @@
+<div class="page">
+<h1>{{blog.title}}</h1>
+{% paginate blog.articles by 30 %}
+
+<div id="paginate-bar" class="row">
+    <span class="left">
+    </span>
+    <span class="right">
+        {% if paginate.pages > 1 %}
+            {% if paginate.previous %}  {{ 'prev' | link_to: paginate.previous.url }} | {% endif %} Page {{ paginate.current_page }} of {{ paginate.pages }} {% if paginate.next %} | {{ 'Next' | link_to: paginate.next.url }}{% endif %}
+        {% endif %}
+    <a href="{{ shop.url }}/blogs/{{ settings.homepage-blog }}.atom"><img src="{{ 'Feed.png' | asset_url }}" style="margin-left: 20px; width: 25px;"></a>
+
+    </span>
+</div>
+
+<ul id="blog-articles">
+  {% for article in blog.articles %}
+<!--    <li class="one-third column"> -->
+        <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+            <div id="excerpt">
+                <a href="{{ article.url }}">
+                {% if article.excerpt != blank %}
+                {{ article.excerpt }}
+                {% endif %}
+                </a>
+            </div>
+                <div class="article-headline">
+                  <small>{{ article.published_at | date: "%A %b %d %Y" }}<br /></small>
+                   <!-- <p>{{ article.content | strip_html | truncatewords: 25 }}</p> -->
+                    {% if blog.comments_enabled? %}
+                    <small><a href="{{article.url}}#comments">{{ article.comments_count }} comments</a>
+                    {% endif %}
+                    <a href="{{ article.url }}"><i>Read More</i></a>
+                    </small>
+                </div>    
+  <hr>
+<!--    </li> -->
+  {% endfor %}
+
+        {% endpaginate %}
+</div>
+
+<!--[if IE]>
+<script type="text/javascript">
+$(document).ready(function() {
+    //IE nth child fix:
+    $("ul#blog-articles li:nth-child(3n+1)").css("margin-left", "0");
+    $("ul#blog-articles li:nth-child(4n+3)").css("margin-right", "0"); 
+    });
+</script>
+<![endif]-->
+
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function() {
+   $("img").addClass("scale-with-grid"); 
+});
+</script>
+

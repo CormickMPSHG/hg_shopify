@@ -1,0 +1,32 @@
+<div id="collectionpage">
+	<div class="collection-description">
+		<h1>Collections</h1>
+	</div>
+	<div id="paginate-bar" class="row"></div>
+	<ul id="three-column-collectionlist">
+	  {% for link in linklists.shop.links %}
+	  {% assign collection = link.object %}
+		{% unless collection.handle == 'frontpage' %}
+		<li class="one-third column">     
+			<div class="collection-image">
+				<a href="{{ collection.url }}" title="Browse our {{ collection_title }} collection">
+				{% if collection.image %}
+					{{ collection.image.src | collection_img_url: 'large' | img_tag: collection_title, 'scale-with-grid' }}
+				{% else %}
+				<img src="{{ collection.products.first.featured_image | product_img_url: 'large' }}" class="scale-with-grid">
+				{% endif %}
+				</a>     
+			</div>
+			<div class="titles" style="margin-top: -2px;">
+				<h2>
+				<a href="{{ collection.url }}" title="Browse our {{ collection_title }} collection">
+				  {{ collection.title }}
+				</a>          
+				</h2>
+			</div>
+		</li>
+	  {% endunless %}
+	  {% endfor %}
+	  </ul>
+	<div class="clear"></div>
+</div>
